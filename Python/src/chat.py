@@ -1,12 +1,18 @@
 import asyncio
 import logging
 from dotenv import load_dotenv
+from semantic_kernel.utils.logging import setup_logging
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion, OpenAITextToImage
 from semantic_kernel.connectors.ai.function_choice_behavior import FunctionChoiceBehavior
 from semantic_kernel.connectors.openapi_plugin import OpenAPIFunctionExecutionParameters
 from semantic_kernel.contents.chat_history import ChatHistory
 from semantic_kernel.functions import KernelArguments
+
+from plugins.time_plugin import TimePlugin
+from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.azure_chat_prompt_execution_settings import (
+    AzureChatPromptExecutionSettings,
+)
 
 # Add Logger
 logger = logging.getLogger(__name__)
@@ -16,11 +22,17 @@ load_dotenv(override=True)
 chat_history = ChatHistory()
 
 def initialize_kernel():
-   #Challene 02 - Add Kernel
-   kernel = Kernel()
-   #Challenge 02 - Chat Completion Service
-   #Challenge 02- Add kernel to the chat completion service
-   return kernel
+    #Challene 02 - Add Kernel
+    kernel = Kernel()
+    #Challenge 02 - Chat Completion Service
+    chat_completion = AzureChatCompletion(service_id="gpt-4o-mini")
+    #Challenge 02- Add kernel to the chat completion service
+    kernel.add_service(chat_completion)
+
+    setup_logging()
+    logging.getLogger("kernel").setLevel(logging.DEBUG)
+
+    return kernel
 
 
 async def process_message(user_input):
@@ -33,6 +45,7 @@ async def process_message(user_input):
 
     # Challenge 03 - Add Time Plugin
     # Placeholder for Time plugin
+    kernel.add_plugin(TimePlugin(), plugin_name="Time")
 
     # Challenge 04 - Import OpenAPI Spec
     # Placeholder for OpenAPI plugin
@@ -47,8 +60,19 @@ async def process_message(user_input):
     # Placeholder for Text To Image plugin
 
     # Start Challenge 02 - Sending a message to the chat completion service by invoking kernel
+    execution_settings = AzureChatPromptExecutionSettings()
+    execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
 
-    #return result
+    chat_history.add_user_message(user_input)
+
+    chat_completion = kernel.get_service(service_id="gpt-4o-mini")
+    result = await chat_completion.get_chat_message_content(
+        chat_history=chat_history,
+        settings=execution_settings,
+        kernel=kernel,
+    )
+
+    return result
 
 def reset_chat_history():
     global chat_history
