@@ -9,6 +9,8 @@ from semantic_kernel.connectors.openapi_plugin import OpenAPIFunctionExecutionPa
 from semantic_kernel.contents.chat_history import ChatHistory
 from semantic_kernel.functions import KernelArguments
 
+from plugins.geo_coding_plugin import GeoPlugin
+from plugins.weather_plugin import WeatherPlugin
 from plugins.time_plugin import TimePlugin
 from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.azure_chat_prompt_execution_settings import (
     AzureChatPromptExecutionSettings,
@@ -40,12 +42,15 @@ async def process_message(user_input):
 
     #Challenge 03 and 04 - Services Required
     #Challenge 03 - Create Prompt Execution Settings
-
+    execution_settings = AzureChatPromptExecutionSettings(temperature=0)
+    execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
 
 
     # Challenge 03 - Add Time Plugin
     # Placeholder for Time plugin
     kernel.add_plugin(TimePlugin(), plugin_name="Time")
+    kernel.add_plugin(WeatherPlugin(), plugin_name="Weather")
+    kernel.add_plugin(GeoPlugin(), plugin_name="Geometry")
 
     # Challenge 04 - Import OpenAPI Spec
     # Placeholder for OpenAPI plugin
@@ -60,9 +65,6 @@ async def process_message(user_input):
     # Placeholder for Text To Image plugin
 
     # Start Challenge 02 - Sending a message to the chat completion service by invoking kernel
-    execution_settings = AzureChatPromptExecutionSettings()
-    execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
-
     chat_history.add_user_message(user_input)
 
     chat_completion = kernel.get_service(service_id="gpt-4o-mini")
@@ -70,7 +72,9 @@ async def process_message(user_input):
         chat_history=chat_history,
         settings=execution_settings,
         kernel=kernel,
+        arguments=KernelArguments(),
     )
+    chat_history.add_message(result)
 
     return result
 

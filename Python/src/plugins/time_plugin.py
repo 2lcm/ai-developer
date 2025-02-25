@@ -12,8 +12,21 @@ class TimePlugin:
 
     @kernel_function(description="Return the current date time")
     async def current_datetime(self) -> str:
-        print(datetime.datetime.now())
         now = str(datetime.datetime.now())
-        print(now)
         return now
+
+    @kernel_function(description="Return the Year for a date passed in as a parameter")
+    async def get_year_of_date(self, date:Annotated[str, "The date format: mm/dd/YYYY"]) -> str:
+        datetiem_val = datetime.datetime.strptime(date, "%m/%d/%Y")
+        return str(datetiem_val.year)
+    
+    @kernel_function(description="Return the Month for a date passed in as a parameter")
+    async def get_month_of_date(self, date:Annotated[str, "The date format: mm/dd/YYYY"]) -> str:
+        datetiem_val = datetime.datetime.strptime(date, "%m/%d/%Y")
+        return str(datetiem_val.month)
+    
+    @kernel_function(description="Return the Day of Week for a date passed in as a parameter")
+    async def get_weekday_of_date(self, date:Annotated[str, "The date format: mm/dd/YYYY"]) -> str:
+        datetiem_val = datetime.datetime.strptime(date, "%m/%d/%Y")
+        return str(datetiem_val.weekday)
     
