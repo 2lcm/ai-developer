@@ -49,11 +49,18 @@ async def process_message(user_input):
     # Challenge 03 - Add Time Plugin
     # Placeholder for Time plugin
     kernel.add_plugin(TimePlugin(), plugin_name="Time")
-    kernel.add_plugin(WeatherPlugin(), plugin_name="Weather")
-    kernel.add_plugin(GeoPlugin(), plugin_name="Geometry")
+    # kernel.add_plugin(WeatherPlugin(), plugin_name="Weather")
+    # kernel.add_plugin(GeoPlugin(), plugin_name="Geometry")
 
     # Challenge 04 - Import OpenAPI Spec
     # Placeholder for OpenAPI plugin
+    # kernel.add_plugin_from_openapi(
+    #     plugin_name="get_tasks",
+    #     openapi_document_path="http://127.0.0.1:8000/openapi.json",
+    #     execution_settings=OpenAPIFunctionExecutionParameters(
+    #         enable_payload_namespacing=True,
+    #     )
+    # )
 
 
     # Challenge 05 - Add Search Plugin

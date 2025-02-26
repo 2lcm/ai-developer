@@ -13,7 +13,7 @@ class GeoPlugin:
     async def get_latitude_longitude(self, location:Annotated[str, "The name of the location"]):  
         print(f"lat/long request location: {location}")
         url = f"https://geocode.maps.co/search?q={location}&api_key={os.getenv('GEOCODING_API_KEY')}"  
-        response = requests.get(url) 
+        response = requests.get(url, verify = False) 
         data = response.json() 
         position = data[0]
         return f"Latitude: {position['lat']}, Longitude: {position['lon']}"
